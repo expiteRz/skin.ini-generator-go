@@ -51,8 +51,8 @@ func callMenu() []g.Widget {
 	return []g.Widget{
 		g.MenuBar().Layout(
 			g.Menu("File").Layout(
-				g.MenuItem("New"),
-				g.MenuItem("Open"),
+				g.MenuItem("New").OnClick(initSetting),
+				g.MenuItem("Open").OnClick(openFile),
 				g.Separator(),
 				g.MenuItem("Save"),
 				g.MenuItem("Save as new"),

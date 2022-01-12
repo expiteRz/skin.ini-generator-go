@@ -63,35 +63,64 @@ var (
 )
 
 func initSetting() {
-	setting.g.AnimationFramerate = -1
-	setting.g.CursorCentre = true
-	setting.g.CursorExpand = true
-	setting.g.CursorRotate = true
-	setting.g.CursorTrailRotate = true
-	setting.g.HitCircleOverlayAboveNumber = true
-	setting.g.LayeredHitSounds = true
-	setting.g.SliderBallFlip = true
-	setting.g.SpinnerFrequencyModulate = true
-
-	setting.c.Combos = []color.RGBA{
-		{255, 192, 0, 255},
-		{0, 202, 0, 255},
-		{18, 124, 255, 255},
-		{242, 24, 57, 255},
+	g := General{
+		Name:                        "",
+		Author:                      "",
+		Version:                     "latest",
+		AnimationFramerate:          -1,
+		AllowSliderBallTint:         false,
+		ComboBurstRandom:            false,
+		CursorCentre:                true,
+		CursorExpand:                true,
+		CursorRotate:                true,
+		CursorTrailRotate:           true,
+		CustomComboBurstSounds:      []int32{},
+		HitCircleOverlayAboveNumber: true,
+		LayeredHitSounds:            true,
+		SliderBallFlip:              true,
+		SpinnerFadePlayfield:        false,
+		SpinnerFrequencyModulate:    true,
+		SpinnerNoBlink:              false,
 	}
-	setting.c.InputOverlayText = color.RGBA{A: 255}
-	setting.c.MenuGlow = color.RGBA{G: 78, B: 255, A: 255}
-	setting.c.SliderBall = color.RGBA{R: 2, G: 170, B: 255, A: 255}
-	setting.c.SliderBorder = color.RGBA{R: 255, G: 255, B: 255, A: 255}
-	setting.c.SongSelectActiveText = color.RGBA{A: 255}
-	setting.c.SongSelectInactiveText = color.RGBA{R: 255, G: 255, B: 255, A: 255}
-	setting.c.SpinnerBackground = color.RGBA{R: 100, G: 100, B: 100, A: 255}
-	setting.c.StarBreakAdditive = color.RGBA{R: 255, G: 182, B: 193, A: 255}
 
-	setting.f.HitCirclePrefix = "default"
-	setting.f.HitCircleOverlap = -2
-	setting.f.ScorePrefix = "score"
-	setting.f.ScoreOverlap = 0
-	setting.f.ComboPrefix = "score"
-	setting.f.ComboOverlap = 0
+	c := Colours{
+		Combos: []color.RGBA{
+			{255, 192, 0, 255},
+			{0, 202, 0, 255},
+			{18, 124, 255, 255},
+			{242, 24, 57, 255},
+		},
+		InputOverlayText:       color.RGBA{A: 255},
+		MenuGlow:               color.RGBA{G: 78, B: 255, A: 255},
+		SliderBall:             color.RGBA{R: 2, G: 170, B: 255, A: 255},
+		SliderBorder:           color.RGBA{R: 255, G: 255, B: 255, A: 255},
+		SongSelectActiveText:   color.RGBA{A: 255},
+		SongSelectInactiveText: color.RGBA{R: 255, G: 255, B: 255, A: 255},
+		SpinnerBackground:      color.RGBA{R: 100, G: 100, B: 100, A: 255},
+		StarBreakAdditive:      color.RGBA{R: 255, G: 182, B: 193, A: 255},
+	}
+
+	f := Fonts{
+		HitCirclePrefix:  "default",
+		HitCircleOverlap: -2,
+		ScorePrefix:      "score",
+		ScoreOverlap:     0,
+		ComboPrefix:      "score",
+		ComboOverlap:     0,
+	}
+
+	setting = Setting{g, c, f}
+	versionSelected = 0
+}
+
+func getVersionLen() *int32 {
+	var count int32 = 0
+	for _, s := range version {
+		if s == setting.g.Version {
+			break
+		}
+		count++
+	}
+
+	return &count
 }
