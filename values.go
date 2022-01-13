@@ -58,6 +58,7 @@ type Fonts struct {
 //}
 
 var (
+	filename        string
 	setting         Setting
 	versionSelected int32
 )
@@ -117,6 +118,10 @@ func getVersionLen() *int32 {
 	var count int32 = 0
 	for _, s := range version {
 		if s == setting.g.Version {
+			break
+		}
+		if count >= int32(len(version)) {
+			count = 0
 			break
 		}
 		count++

@@ -6,6 +6,8 @@ import (
 	"github.com/sqweek/dialog"
 	"gopkg.in/ini.v1"
 	"image/color"
+	"io/ioutil"
+	"regexp"
 	"strconv"
 	"strings"
 )
@@ -16,6 +18,7 @@ func openFile() {
 		return
 	}
 
+	filename = s
 	err = readSetting(s)
 	if err != nil {
 		fmt.Println(err)
@@ -25,16 +28,52 @@ func openFile() {
 	}
 }
 
-func readSetting(path string) (err error) {
-	i := new(ini.LoadOptions)
-	i.KeyValueDelimiterOnWrite = ":"
+func getFontPrefix(r string) string {
+	sur := strings.TrimSuffix(filename, "skin.ini")
+	d, err := dialog.File().SetStartDir(sur).Filter(".png file (*.png)", "png").Load()
+	if err != nil {
+		return r
+	}
 
-	l, err := ini.LoadSources(*i, path)
+	s := d[len(sur):]
+	s = strings.TrimSuffix(s, ".png")
+	s = strings.TrimSuffix(s, "@2x")
+	if strings.HasSuffix(s, "-comma") {
+		return strings.TrimSuffix(s, "-comma")
+	}
+	if strings.HasSuffix(s, "-dot") {
+		return strings.TrimSuffix(s, "-dot")
+	}
+	if strings.HasSuffix(s, "-percent") {
+		return strings.TrimSuffix(s, "-percent")
+	}
+	s = strings.ReplaceAll(s, `\`, "/")
+
+	return s[:len(s)-2]
+}
+
+func readSetting(path string) (err error) {
+	skin, err := ioutil.ReadFile(path)
+	if err != nil {
+		return err
+	}
+
+	println(string(skin))
+
+	i := ini.LoadOptions{
+		KeyValueDelimiterOnWrite:    ":",
+		SkipUnrecognizableLines:     true,
+		UnescapeValueCommentSymbols: true,
+		UnescapeValueDoubleQuotes:   true,
+	}
+
+	l, err := ini.LoadSources(i, path)
 	if err != nil {
 		fmt.Println(err.Error())
 		return errors.New("Could not read a skin.ini\n")
 	}
 
+	initSetting()
 	sections := l.Sections()
 	for i := range sections {
 		switch sections[i].Name() {
@@ -165,16 +204,20 @@ func readFonts(k []*ini.Key) Fonts {
 	return *f
 }
 
+//parseUInt8 parses uint8 from string
 func parseUInt8(src string) uint8 {
-	pr, _ := strconv.ParseInt(src, 10, 8)
+	pr, _ := strconv.ParseInt(src, 10, 16)
 	return uint8(pr)
 }
 
+//parseInt32 parses int32 from string
 func parseInt32(src string) int32 {
 	pr, _ := strconv.ParseInt(src, 10, 32)
 	return int32(pr)
 }
 
+// parseBool parses boolean from string,
+// 0 -> false, 1 -> true
 func parseBool(src string) bool {
 	b, err := strconv.ParseBool(src)
 	if err != nil {
@@ -183,6 +226,7 @@ func parseBool(src string) bool {
 	return b
 }
 
+// parseInts parses and stores int32 array from source string
 func parseInts(src string) []int32 {
 	var ia []int32
 	split := strings.Split(src, ",")
@@ -193,13 +237,24 @@ func parseInts(src string) []int32 {
 	return ia
 }
 
+// parseColor parses color.RGBA from string arrays
 func parseColor(src string) color.RGBA {
 	var cl color.RGBA
 	split := strings.Split(src, ",")
+	for i := range split {
+		split[i] = removeUnNum(split[i])
+	}
+
 	cl.R = parseUInt8(split[0])
 	cl.G = parseUInt8(split[1])
 	cl.B = parseUInt8(split[2])
 	cl.A = 255
 
 	return cl
+}
+
+// removeUnNum only stores numbers from source string
+func removeUnNum(str string) string {
+	s := regexp.MustCompile("[\\d\\-]+").FindAllString(str, -1)
+	return strings.Join(s, "")
 }

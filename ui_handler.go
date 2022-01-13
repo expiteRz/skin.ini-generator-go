@@ -141,9 +141,24 @@ func callColours() []g.Widget {
 
 func callFonts() []g.Widget {
 	return []g.Widget{
-		g.InputText(&setting.f.HitCirclePrefix).Label("HitCirclePrefix"),
-		g.InputText(&setting.f.ScorePrefix).Label("ScorePrefix"),
-		g.InputText(&setting.f.ComboPrefix).Label("ComboPrefix"),
+		g.Row(
+			g.InputText(&setting.f.HitCirclePrefix),
+			g.Button("?").OnClick(func() {
+				setting.f.HitCirclePrefix = getFontPrefix(setting.f.HitCirclePrefix)
+			}),
+			g.Label("HitCirclePrefix")),
+		g.Row(
+			g.InputText(&setting.f.ScorePrefix),
+			g.Button("?").OnClick(func() {
+				setting.f.ScorePrefix = getFontPrefix(setting.f.ScorePrefix)
+			}),
+			g.Label("ScorePrefix")),
+		g.Row(
+			g.InputText(&setting.f.ComboPrefix),
+			g.Button("?").OnClick(func() {
+				setting.f.ComboPrefix = getFontPrefix(setting.f.ComboPrefix)
+			}),
+			g.Label("ComboPrefix")),
 		g.InputInt(&setting.f.HitCircleOverlap).Label("HitCircleOverlap"),
 		g.InputInt(&setting.f.ScoreOverlap).Label("ScoreOverlap"),
 		g.InputInt(&setting.f.ComboOverlap).Label("ComboOverlap"),

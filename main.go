@@ -26,7 +26,7 @@ func loop() {
 	}
 
 	if errorBox {
-		g.Msgbox("Error", "Could not open skin.ini").ResultCallback(func(r g.DialogResult) {
+		g.Msgbox("Error", errorMsg).ResultCallback(func(r g.DialogResult) {
 			errorBox = false
 		})
 	}
