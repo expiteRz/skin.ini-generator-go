@@ -1,6 +1,11 @@
 package main
 
-import "image/color"
+import (
+	"image/color"
+	"log"
+	"os"
+	"path/filepath"
+)
 
 type Setting struct {
 	g General
@@ -128,4 +133,19 @@ func getVersionLen() *int32 {
 	}
 
 	return &count
+}
+
+func getCursorImage() string {
+	if filename == "" {
+		ex, err := os.Executable()
+		if err != nil {
+			log.Fatalf("Error: Cursor image not found -> %v\n", err)
+			return ""
+		}
+		path := filepath.Dir(ex) + "\\cursor.png"
+
+		return path
+	}
+
+	return filepath.Dir(filename) + "\\cursor.png"
 }

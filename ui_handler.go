@@ -57,7 +57,7 @@ func callMenu() []g.Widget {
 				g.MenuItem("Save"),
 				g.MenuItem("Save as new"),
 				g.Separator(),
-				g.MenuItem("Quit").OnClick(close),
+				g.MenuItem("Quit").OnClick(closeFunc),
 			),
 			g.Menu("Help").Layout(
 				g.MenuItem("About").OnClick(openAbout),
@@ -89,6 +89,7 @@ func callGeneral() []g.Widget {
 				g.Checkbox("CursorTrailRotate", &setting.g.CursorTrailRotate),
 			),
 			// Display cursor image
+			g.Align(g.AlignRight).To(g.ImageWithFile(getCursorImage()).Size(100, 100)),
 		),
 		g.Row(
 			g.Label("CustomComboBurstSounds"),
