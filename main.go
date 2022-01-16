@@ -2,7 +2,6 @@ package main
 
 import (
 	g "github.com/AllenDang/giu"
-	"github.com/faiface/mainthread"
 	"image/color"
 	"os"
 )
@@ -11,11 +10,15 @@ func main() {
 	initSetting()
 	app := g.NewMasterWindow("skin.ini Generator", 490, 768, g.MasterWindowFlagsNotResizable)
 	app.SetBgColor(color.RGBA{R: 42, G: 21, B: 73, A: 255})
+
+	setImage() // Needs to initialize cursor image, so put it
+
 	app.Run(loop)
-	mainthread.Run(fn)
 }
 
 func loop() {
+	setImage() // Every per frame, load specifically cursor images
+
 	g.SingleWindowWithMenuBar().Layout(
 		callLayout()...,
 	)
@@ -32,17 +35,6 @@ func loop() {
 			errorBox = false
 		})
 	}
-
-	if g.IsKeyDown(g.KeyLeftControl+g.KeyO) || g.IsKeyDown(g.KeyRightControl+g.KeyO) {
-		openFile()
-	} else if g.IsKeyDown(g.KeyLeftControl+g.KeyN) || g.IsKeyDown(g.KeyRightControl+g.KeyN) {
-		initSetting()
-	} else if g.IsKeyDown(g.KeyLeftControl+g.KeyS) || g.IsKeyDown(g.KeyRightControl+g.KeyS) {
-		// TODO Saving file process
-	}
-}
-
-func fn() {
 }
 
 func closeFunc() {

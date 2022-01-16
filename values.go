@@ -1,10 +1,14 @@
 package main
 
 import (
+	"fmt"
+	g "github.com/AllenDang/giu"
+	"image"
 	"image/color"
 	"log"
 	"os"
 	"path/filepath"
+	"strings"
 )
 
 type Setting struct {
@@ -136,16 +140,91 @@ func getVersionLen() *int32 {
 }
 
 func getCursorImage() string {
-	if filename == "" {
+	var def = func() string {
 		ex, err := os.Executable()
 		if err != nil {
 			log.Fatalf("Error: Cursor image not found -> %v\n", err)
 			return ""
 		}
-		path := filepath.Dir(ex) + "\\cursor.png"
-
-		return path
+		return filepath.Dir(ex) + "\\cursor.png"
+	}
+	if filename == "" {
+		return def()
 	}
 
-	return filepath.Dir(filename) + "\\cursor.png"
+	if _, err := os.Stat(strings.TrimSuffix(filename, "skin.ini") + "cursor.png"); err != nil {
+		if _, err := os.Stat(strings.TrimSuffix(filename, "skin.ini") + "cursor@2x.png"); err != nil {
+			return def()
+		}
+		return strings.TrimSuffix(filename, "skin.ini") + "cursor@2x.png"
+	}
+
+	return strings.TrimSuffix(filename, "skin.ini") + "cursor.png"
+}
+
+// false = width, true = height
+func getImageSize(m bool) float32 {
+	errHndlr := func(err error) {
+		fmt.Println(err)
+		errorMsg = "Could not get image size"
+		errorBox = true
+	}
+
+	f, err := os.Open(getCursorImage())
+	if err != nil {
+		errHndlr(err)
+		return 0
+	}
+
+	i, _, err := image.Decode(f)
+	if err != nil {
+		errHndlr(err)
+		return 0
+	}
+
+	if m {
+		return float32(i.Bounds().Dy())
+	}
+	return float32(i.Bounds().Dx())
+}
+
+func setImage() {
+	img, _ := g.LoadImage(getCursorImage())
+	g.NewTextureFromRgba(img, func(t *g.Texture) {
+		texture = t
+	})
+}
+
+func getImageSetPoint(m bool) image.Point {
+	img, _ := os.Open(getCursorImage())
+	decode, _, _ := image.Decode(img)
+
+	if decode.Bounds().Dx() <= 100 {
+		decX, decY := decode.Bounds().Dx(), decode.Bounds().Dy()
+		spX, spY := 100-decX, 100-decY
+
+		if !setting.g.CursorCentre {
+			if m {
+				return image.Pt(530-spX, 380-spY)
+			}
+			return image.Pt(410, 260)
+		}
+
+		if m {
+			return image.Pt(470-(spX/2), 320-(spY/2))
+		}
+		return image.Pt(350+(spX/2), 200+(spY/2))
+	}
+
+	if !setting.g.CursorCentre {
+		if m {
+			return image.Pt(530, 380)
+		}
+		return image.Pt(410, 260)
+	}
+
+	if m {
+		return image.Pt(470, 320)
+	}
+	return image.Pt(350, 200)
 }

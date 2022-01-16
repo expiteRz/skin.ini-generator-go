@@ -61,16 +61,16 @@ func readSetting(path string) (err error) {
 	println(string(skin))
 
 	i := ini.LoadOptions{
-		KeyValueDelimiterOnWrite:    ":",
-		SkipUnrecognizableLines:     true,
-		UnescapeValueCommentSymbols: true,
-		UnescapeValueDoubleQuotes:   true,
+		KeyValueDelimiterOnWrite: ":",
+		SkipUnrecognizableLines:  true,
+		//UnescapeValueCommentSymbols: true,
+		//UnescapeValueDoubleQuotes:   true,
 	}
 
 	l, err := ini.LoadSources(i, path)
 	if err != nil {
 		fmt.Println(err.Error())
-		return errors.New("Could not read a skin.ini\n")
+		return errors.New("Could not read a skin.ini\n\n" + err.Error())
 	}
 
 	initSetting()

@@ -3,8 +3,11 @@ package main
 import (
 	"fmt"
 	g "github.com/AllenDang/giu"
+	"image"
 	"image/color"
 )
+
+var texture *g.Texture
 
 func NewRGB(r, g, b uint8) color.RGBA {
 	return color.RGBA{r, g, b, 255}
@@ -52,7 +55,13 @@ func callMenu() []g.Widget {
 		g.MenuBar().Layout(
 			g.Menu("File").Layout(
 				g.MenuItem("New").OnClick(initSetting),
-				g.MenuItem("Open").OnClick(openFile),
+				g.Event().OnKeyDown(g.KeyLeftControl+g.KeyN,
+					initSetting,
+				),
+				g.MenuItem("Open").OnClick(
+					openFile,
+				),
+				g.Event().OnKeyDown(g.KeyLeftControl+g.KeyO, openFile),
 				g.Separator(),
 				g.MenuItem("Save"),
 				g.MenuItem("Save as new"),
@@ -89,7 +98,13 @@ func callGeneral() []g.Widget {
 				g.Checkbox("CursorTrailRotate", &setting.g.CursorTrailRotate),
 			),
 			// Display cursor image
-			g.Align(g.AlignRight).To(g.ImageWithFile(getCursorImage()).Size(100, 100)),
+			g.Column(g.Custom(func() {
+				canvas := g.GetCanvas()
+				canvas.AddRectFilled(image.Pt(350, 200), image.Pt(470, 320),
+					color.RGBA{255, 255, 255, 19}, 0, 2)
+				canvas.AddImage(texture, getImageSetPoint(false), getImageSetPoint(true))
+			}),
+			),
 		),
 		g.Row(
 			g.Label("CustomComboBurstSounds"),

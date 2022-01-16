@@ -2,8 +2,6 @@ module github.com/expiteRz/skin.ini-generator-go
 
 go 1.17
 
-require fyne.io/fyne/v2 v2.1.2
-
 require (
 	github.com/AllenDang/giu v0.6.0 // indirect
 	github.com/AllenDang/go-findfont v0.0.0-20200702051237-9f180485aeb8 // indirect
